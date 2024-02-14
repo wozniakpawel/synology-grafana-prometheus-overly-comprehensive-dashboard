@@ -4,6 +4,8 @@ A complete Docker stack to run a Grafana Dashboard on a Synology NAS.
 
 Grafana | Prometheus | cAdvisor | Speedtest Exporter | Node Exporter | SNMP Exporter | UPS stats
 
+<img src="./dashboard_showcase.png" width="384" height="1171">
+
 ## Setup
 
 For each NAS you want to collect the data from, follow the steps below.
