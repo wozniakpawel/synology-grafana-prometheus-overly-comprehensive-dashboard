@@ -1,0 +1,138 @@
+version: "3.9"
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: Grafana
+    hostname: grafana
+    networks:
+      - grafana_net
+    mem_limit: 512m
+    cpu_shares: 512
+    security_opt:
+      - no-new-privileges:true
+    user: user_id:group_id
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/api/health
+    ports:
+      - 3340:3000
+    volumes:
+      - ./grafana:/var/lib/grafana:rw
+    environment:
+      TZ: Europe/London
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,natel-discrete-panel,grafana-piechart-panel
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus
+    command:
+      - '--storage.tsdb.retention.time=60d'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    container_name: Prometheus
+    hostname: prometheus
+    networks:
+      - grafana_net
+      - prometheus_net
+    mem_limit: 1g
+    cpu_shares: 768
+    security_opt:
+      - no-new-privileges=true
+    user: user_id:group_id
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9090/ || exit 1
+    volumes:
+      - ./prometheus:/prometheus:rw
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    command:
+      - --collector.disable-defaults
+      - --collector.stat
+      - --collector.time
+      - --collector.cpu
+      - --collector.loadavg
+      - --collector.hwmon
+      - --collector.meminfo
+      - --collector.diskstats
+    container_name: Node_Exporter
+    hostname: nodeexporter
+    networks:
+      - prometheus_net
+    mem_limit: 256m
+    mem_reservation: 64m
+    cpu_shares: 512
+    security_opt:
+      - no-new-privileges=true
+    read_only: true
+    user: user_id:group_id
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9100/
+    restart: unless-stopped
+
+  snmp-exporter:
+    image: prom/snmp-exporter:latest
+    command:
+      - '--config.file=/etc/snmp_exporter/snmp.yml'
+    container_name: SNMP_Exporter
+    hostname: snmp
+    networks:
+      - prometheus_net
+    mem_limit: 256m
+    mem_reservation: 64m
+    cpu_shares: 512
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    user: user_id:group_id
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:9116/ || exit 1
+    volumes:
+      - ./snmp.yml:/etc/snmp_exporter/snmp.yml:ro
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    command:
+      - '--docker_only=true'
+    container_name: cAdvisor
+    hostname: cadvisor
+    networks:
+      - prometheus_net
+    mem_limit: 256m
+    mem_reservation: 64m
+    cpu_shares: 512
+    security_opt:
+      - no-new-privileges=true
+    read_only: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+
+  speedtest_exporter:
+    image: ghcr.io/danopstech/speedtest_exporter:latest
+    container_name: speedtest_exporter
+    hostname: speedtest
+    networks:
+      - prometheus_net
+    security_opt:
+      - no-new-privileges=true
+    read_only: true
+    user: user_id:group_id
+    restart: unless-stopped
+
+networks:
+  grafana_net:
+    name: grafana_net
+    ipam:
+      config:
+        - subnet: 172.22.1.0/24
+  prometheus_net:
+    name: prometheus_net
+    ipam:
+      config:
+        - subnet: 172.22.0.0/24
