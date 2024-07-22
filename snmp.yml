@@ -4,9 +4,9 @@ auths:
    security_level: authPriv
    auth_protocol: MD5
    username: exporter
-   password: snmpv3_password_placeholder
+   password: "snmpv3_password_placeholder"
    priv_protocol: DES
-   priv_password: snmp_priv_password_placeholder
+   priv_password: "snmp_priv_password_placeholder"
 modules:
   synology:
     walk:

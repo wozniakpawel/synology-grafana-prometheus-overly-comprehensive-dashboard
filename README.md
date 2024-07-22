@@ -42,11 +42,11 @@ If the checkbox *is* ticked, do the following:
 
 3. Tick the **Enable SNMP privacy** checkbox. Set protocol to DES and pick a second, different password.
 
-4. Edit the `snmp.yml` file and replace the `snmpv3_password_placeholder` and `snmp_priv_password_placeholder` with the passwords you just picked.
+4. Edit the `snmp.yml` file and replace the `snmpv3_password_placeholder` and `snmp_priv_password_placeholder` with the passwords you just picked. Keep the quotation marks around the password.
 
 ### Prometheus
 
-Replace the `your_real_host_ip` placeholder with your own local NAS IP (for example 192.168.0.10).
+Replace the `your_real_host_ip` placeholder with your own local NAS IP (for example 192.168.0.10). Do not add any port number after it, just the IP address is enough.
 
 ### Docker compose
 
