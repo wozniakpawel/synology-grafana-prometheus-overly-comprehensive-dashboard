@@ -114,7 +114,7 @@ services:
     restart: unless-stopped
 
   speedtest_exporter:
-    image: ghcr.io/danopstech/speedtest_exporter:latest
+    image: ghcr.io/aaronmwelborn/speedtest_exporter:latest
     container_name: speedtest_exporter
     hostname: speedtest
     networks:

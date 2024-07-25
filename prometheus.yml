@@ -37,4 +37,4 @@ scrape_configs:
     scrape_timeout:  60s
     metrics_path: /metrics
     static_configs:
-      - targets: ['speedtest:9090']
+      - targets: ['speedtest:9877']
