@@ -93,7 +93,7 @@ services:
     restart: unless-stopped
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
+    image: ghcr.io/google/cadvisor:0.54.0
     command:
       - '--docker_only=true'
     container_name: cAdvisor
